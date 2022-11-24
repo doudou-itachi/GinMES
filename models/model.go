@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"github.com/dgrijalva/jwt-go/v4"
+	"time"
+)
 
 type BaseModel struct {
 	ID         int       `gorm:"primary_key" json:"id"`
@@ -85,4 +88,15 @@ type WorkStationInfo struct {
 func (W *WorkStationInfo) TableName() string {
 	return "workstationinfo"
 
+}
+
+type Users struct {
+	BaseModel
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type CustomClaims struct {
+	Users
+	jwt.StandardClaims
 }

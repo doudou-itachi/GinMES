@@ -2,6 +2,7 @@ package main
 
 import (
 	"GinMES/database"
+	"GinMES/middleware"
 	"GinMES/models"
 	"GinMES/routes"
 	"GinMES/views"
@@ -12,9 +13,12 @@ func main() {
 	// 迁移到数据库
 	database.Db.AutoMigrate(&models.ProductInfo{}, &models.ProductUnitInfo{},
 		&models.LineInfo{}, &models.WorkProcessInfo{},
-		&models.WorkCraftInfo{}, &models.WorkStationInfo{})
+		&models.WorkCraftInfo{}, &models.WorkStationInfo{}, &models.Users{})
 	// 产品
+	//route.GET()
 	apiV1 := route.Group("/api")
+	apiV1.POST("/login", views.Login)
+	apiV1.Use(middleware.JWTAuth())
 	apiV1.POST("/product/create", views.ProductCreate)
 	apiV1.GET("/product/list", views.GetProduct)
 	apiV1.POST("/product/update", views.ProductUpdate)

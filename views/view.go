@@ -424,3 +424,31 @@ func WorkCraftDelete(c *gin.Context) {
 	util_response.Response(http.StatusOK, craft_object, "")
 	return
 }
+
+func Login(c *gin.Context) {
+	utils_response := utils.Gin{C: c}
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	var user_object models.Users
+	res := database.Db.Where(&models.Users{Username: username, Password: password}).First(&user_object)
+	if res.RowsAffected != 0 {
+		if user_object.Username == username && user_object.Password == password {
+			token, er := utils.GenToken(user_object)
+			if er != nil {
+				utils_response.Response(-1, "", "token签发错误")
+				return
+			} else {
+				token_map := make(map[string]interface{})
+				token_map["token"] = token
+				utils_response.Response(http.StatusOK, token_map, "")
+				return
+			}
+		} else {
+			utils_response.Response(http.StatusOK, "", "账号或密码错误")
+			return
+		}
+	} else {
+		utils_response.Response(http.StatusOK, "", "不存在该用户")
+		return
+	}
+}
