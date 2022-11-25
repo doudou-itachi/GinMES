@@ -183,7 +183,7 @@ func UnitGet(c *gin.Context) {
 	if len(unit_name) != 0 {
 		where = where.Where(&models.ProductUnitInfo{UnitName: unit_name})
 	}
-	where.Find(&unit_object)
+	where.Preload("ProductInfo").Find(&unit_object)
 	if where.Error != nil {
 		util_response.Response(http.StatusOK, "", "查询失败")
 	}
@@ -451,4 +451,236 @@ func Login(c *gin.Context) {
 		utils_response.Response(http.StatusOK, "", "不存在该用户")
 		return
 	}
+}
+
+func LineCreate(c *gin.Context) {
+	utils_response := utils.Gin{C: c}
+	var linecreatebind utils.LineCreateBind
+	var line_object models.LineInfo
+	err := c.ShouldBind(&linecreatebind)
+	if err != nil {
+		utils_response.Response(-1, "", "获取参数失败")
+		return
+	}
+	line_object.Code = linecreatebind.LineCode
+	line_object.LineName = linecreatebind.LineName
+	line_object.Reamrk = linecreatebind.Remark
+	res := database.Db.Create(&line_object)
+	if res.Error != nil && res.RowsAffected == 0 {
+		utils_response.Response(-1, "", "创建失败")
+		return
+	}
+	utils_response.Response(0, line_object, "")
+	return
+}
+func LineGet(c *gin.Context) {
+	utils_response := utils.Gin{C: c}
+	var linegetbind utils.LineGetBind
+	var line_object []models.LineInfo
+	err := c.ShouldBind(&linegetbind)
+	if err != nil {
+		utils_response.Response(-1, "", "获取参数失败")
+		return
+	}
+	qs := database.Db.Model(&line_object).Where(&models.BaseModel{IsValid: 1})
+	if len(linegetbind.LineCode) != 0 {
+		qs = qs.Where(&models.LineInfo{Code: linegetbind.LineCode})
+	}
+	if len(linegetbind.LineName) != 0 {
+		qs = qs.Where(&models.LineInfo{LineName: linegetbind.LineName})
+	}
+	res := qs.Find(&line_object)
+	if res.Error != nil || res.RowsAffected == 0 {
+		utils_response.Response(-1, "", "查询失败")
+		return
+	}
+	utils_response.Response(0, line_object, "")
+	return
+}
+
+func LineUpdate(c *gin.Context) {
+	utils_response := utils.Gin{C: c}
+	var linebind utils.LineUpdateBind
+	var line_object models.LineInfo
+	err := c.ShouldBind(&linebind)
+	if err != nil {
+		utils_response.Response(-1, "", "获取参数失败")
+		return
+	}
+	res := database.Db.Model(&line_object).Where(&models.BaseModel{IsValid: 1, ID: linebind.LineId}).First(&line_object)
+	if res.Error != nil || res.RowsAffected == 0 {
+		utils_response.Response(-1, "", "查询失败或未查询到相关数据")
+		return
+	}
+	if len(linebind.LineCode) != 0 {
+		line_object.Code = linebind.LineCode
+	}
+	if len(linebind.LineName) != 0 {
+		line_object.LineName = linebind.LineName
+	}
+	if len(linebind.Remark) != 0 {
+		line_object.Reamrk = linebind.Remark
+	}
+	res2 := database.Db.Save(&line_object)
+	if res2.Error != nil || res2.RowsAffected == 0 {
+		utils_response.Response(-1, "", "更新失败")
+		return
+	}
+	utils_response.Response(0, line_object, "")
+	return
+}
+func LineDelete(c *gin.Context) {
+	utils_response := utils.Gin{C: c}
+	var linebind utils.LineUpdateBind
+	var line_object models.LineInfo
+	err := c.ShouldBind(&linebind)
+	if err != nil {
+		utils_response.Response(-1, "", "获取参数失败")
+		return
+	}
+	res := database.Db.Model(&line_object).Where(&models.BaseModel{ID: linebind.LineId, IsValid: 1}).First(&line_object)
+	if res.Error != nil || res.RowsAffected == 0 {
+		utils_response.Response(-1, "", "查询失败或未查询到相关数据")
+		return
+	}
+	line_object.IsValid = 0
+	res2 := database.Db.Save(&line_object)
+	if res2.Error != nil || res2.RowsAffected == 0 {
+		utils_response.Response(-1, "", "删除失败")
+		return
+	}
+	utils_response.Response(0, line_object, "")
+	return
+}
+
+// 工位
+func StationCreate(c *gin.Context) {
+	utils_response := utils.Gin{C: c}
+	var stationbind utils.StationBind
+	var station_object models.WorkStationInfo
+	err := c.ShouldBind(&stationbind)
+	if err != nil {
+		utils_response.Response(-1, "", "获取参数失败")
+		return
+	} else if len(stationbind.StationCode) == 0 || len(stationbind.StationName) == 0 {
+		utils_response.Response(-1, "", "工位代码或工位名称不能为空")
+		return
+	} else if stationbind.LineId == 0 {
+		utils_response.Response(-1, "", "产线id不能为空")
+		return
+	}
+	station_object.Code = stationbind.StationCode
+	station_object.WorkStationName = stationbind.StationName
+	station_object.Remark = stationbind.Remark
+	station_object.LineInfoID = stationbind.LineId
+	station_object.WorkProcessInfoID = stationbind.ProcessId
+
+	res := database.Db.Create(&station_object)
+	if res.Error != nil || res.RowsAffected == 0 {
+		utils_response.Response(-1, "", "创建失败")
+		return
+	}
+	utils_response.Response(0, station_object, "")
+	return
+}
+
+func StationGet(c *gin.Context) {
+	utils_response := utils.Gin{C: c}
+	var stationbind utils.StationBind
+	var station_object []models.WorkStationInfo
+	err := c.ShouldBind(&stationbind)
+	if err != nil {
+		utils_response.Response(-1, "", "获取参数失败")
+		return
+	}
+	res := database.Db.Model(&station_object).Where(&models.BaseModel{IsValid: 1})
+	if len(stationbind.StationCode) != 0 {
+		res = res.Where(&models.WorkStationInfo{Code: stationbind.StationCode})
+	}
+	if len(stationbind.StationName) != 0 {
+		res = res.Where(&models.WorkStationInfo{WorkStationName: stationbind.StationName})
+	}
+	res = res.Find(&station_object)
+	if res.Error != nil || res.RowsAffected == 0 {
+		utils_response.Response(-1, "", "未查询导数据或查询失败")
+		return
+	}
+	utils_response.Response(0, station_object, "")
+	return
+}
+
+func StationPut(c *gin.Context) {
+	utils_response := utils.Gin{C: c}
+	var station_object models.WorkStationInfo
+	var stationbind utils.StationBind
+	res := c.ShouldBind(&stationbind)
+	if res != nil {
+		utils_response.Response(-1, "", "获取参数失败")
+		return
+	} else if stationbind.StationId == 0 {
+		utils_response.Response(-1, "", "id参数未传入")
+		return
+	} else if stationbind.LineId == 0 {
+		utils_response.Response(-1, "", "产线id参数未传入")
+		return
+	}
+	res2 := database.Db.Model(&station_object).Where(&models.BaseModel{ID: stationbind.StationId, IsValid: 1}).First(&station_object)
+	if res2.Error != nil || res2.RowsAffected == 0 {
+		utils_response.Response(-1, "", "查询失败或未查询到数据")
+		return
+	}
+	if len(stationbind.StationCode) != 0 {
+		station_object.Code = stationbind.StationCode
+	}
+	if len(stationbind.StationName) != 0 {
+		station_object.WorkStationName = stationbind.StationName
+	}
+	if len(stationbind.Remark) != 0 {
+		station_object.Remark = stationbind.Remark
+	}
+	station_object.LineInfoID = stationbind.LineId
+	//database.Db.Model(&station_object).Association("LineInfoID").Clear()
+	//database.Db.Model(&station_object).Association("LineInfoID").Replace(stationbind.LineId)
+	if stationbind.ProcessId == 0 {
+		database.Db.Model(&station_object).Association("WorkProcessInfoID").Clear()
+	} else {
+		station_object.WorkProcessInfoID = stationbind.ProcessId
+	}
+
+	//database.Db.Model(&station_object).Association("WorkProcessInfoID").Clear()
+	//database.Db.Model(&station_object).Association("WorkProcessInfoID").Replace(stationbind.ProcessId)
+	res3 := database.Db.Save(&station_object)
+	if res3.Error != nil || res3.RowsAffected == 0 {
+		utils_response.Response(-1, "", "保存失败")
+		return
+	}
+	utils_response.Response(0, station_object, "")
+	return
+}
+func StationDelete(c *gin.Context) {
+	utils_response := utils.Gin{C: c}
+	var station_object models.WorkStationInfo
+	var stationbind utils.StationBind
+	err := c.ShouldBind(&stationbind)
+	if err != nil {
+		utils_response.Response(-1, "", "获取参数失败")
+		return
+	}
+	if stationbind.StationId == 0 {
+		utils_response.Response(-1, "", "id未传入")
+		return
+	}
+	res := database.Db.Model(&station_object).Where(&models.BaseModel{ID: stationbind.StationId, IsValid: 1}).First(&station_object)
+	if res.Error != nil || res.RowsAffected == 0 {
+		utils_response.Response(-1, "", "未查询到数据")
+		return
+	}
+	station_object.IsValid = 0
+	res2 := database.Db.Save(&station_object)
+	if res2.Error != nil || res2.RowsAffected == 0 {
+		utils_response.Response(-1, "", "删除失败")
+		return
+	}
+	utils_response.Response(0, station_object, "")
+	return
 }

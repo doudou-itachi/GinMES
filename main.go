@@ -1,9 +1,7 @@
 package main
 
 import (
-	"GinMES/database"
 	"GinMES/middleware"
-	"GinMES/models"
 	"GinMES/routes"
 	"GinMES/views"
 )
@@ -11,9 +9,9 @@ import (
 func main() {
 	route := routes.InitRouter()
 	// 迁移到数据库
-	database.Db.AutoMigrate(&models.ProductUnitInfo{}, &models.ProductInfo{},
-		&models.LineInfo{}, &models.WorkProcessInfo{},
-		&models.WorkCraftInfo{}, &models.WorkStationInfo{}, &models.Users{})
+	//database.Db.AutoMigrate(&models.ProductUnitInfo{}, &models.ProductInfo{},
+	//	&models.LineInfo{}, &models.WorkProcessInfo{},
+	//	&models.WorkCraftInfo{}, &models.WorkStationInfo{}, &models.Users{})
 	// 产品
 	//route.GET()
 	apiV1 := route.Group("/api")
@@ -39,7 +37,15 @@ func main() {
 	apiV1.GET("/workcraft", views.WorkCraftGET)
 	apiV1.PUT("/workcraft", views.WorkCraftupdate)
 	apiV1.DELETE("/workcraft", views.WorkCraftDelete)
+	//产线
+	apiV1.POST("/line", views.LineCreate)
+	apiV1.GET("/line", views.LineGet)
+	apiV1.PUT("/line", views.LineUpdate)
+	apiV1.DELETE("/line", views.LineDelete)
 	// 工位
-
+	apiV1.POST("/station", views.StationCreate)
+	apiV1.GET("/station", views.StationGet)
+	apiV1.PUT("/station", views.StationPut)
+	apiV1.DELETE("/station", views.StationDelete)
 	route.Run("0.0.0.0:5000")
 }

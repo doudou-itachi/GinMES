@@ -56,6 +56,7 @@ type WorkProcessInfo struct {
 	WorkProcessName string `json:"work_process_name"`
 	Remark          string `json:"remark"`
 	WorkStationInfo WorkStationInfo
+	WorkCraftInfos  *[]WorkCraftInfo `json:"WorkCraftInfos" gorm:"many2many:work_craft_process;"`
 }
 
 func (W *WorkProcessInfo) TableName() string {
@@ -65,10 +66,10 @@ func (W *WorkProcessInfo) TableName() string {
 
 type WorkCraftInfo struct {
 	BaseModel
-	Code             string            `json:"code"`
-	WorkCraftName    string            `json:"work_craft_name"`
-	Remark           string            `json:"remark"`
-	WorkProcessInfos []WorkProcessInfo `json:"WorkProcessInfos" gorm:"many2many:work_craft_process;"`
+	Code             string             `json:"code"`
+	WorkCraftName    string             `json:"work_craft_name"`
+	Remark           string             `json:"remark"`
+	WorkProcessInfos *[]WorkProcessInfo `json:"WorkProcessInfos" gorm:"many2many:work_craft_process;"`
 }
 
 func (W *WorkCraftInfo) TableName() string {
@@ -81,8 +82,8 @@ type WorkStationInfo struct {
 	Code              string `json:"code"`
 	WorkStationName   string `json:"work_station_name"`
 	Remark            string `json:"remark"`
-	WorkProcessInfoID int
-	LineInfoID        int
+	WorkProcessInfoID int    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	LineInfoID        int    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 func (W *WorkStationInfo) TableName() string {
