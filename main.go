@@ -1,20 +1,24 @@
 package main
 
 import (
+	"GinMES/database"
 	"GinMES/middleware"
+	"GinMES/models"
 	"GinMES/routes"
 	"GinMES/views"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
 	route := routes.InitRouter()
 	// 迁移到数据库
-	//database.Db.AutoMigrate(&models.ProductUnitInfo{}, &models.ProductInfo{},
-	//	&models.LineInfo{}, &models.WorkProcessInfo{},
-	//	&models.WorkCraftInfo{}, &models.WorkStationInfo{}, &models.Users{})
+	database.Db.AutoMigrate(&models.ProductUnitInfo{}, &models.ProductInfo{},
+		&models.LineInfo{}, &models.WorkProcessInfo{},
+		&models.WorkCraftInfo{}, &models.WorkStationInfo{}, &models.Users{})
 	// 产品
 	//route.GET()
 	apiV1 := route.Group("/api")
+	apiV1.Use(cors.Default())
 	apiV1.POST("/login", views.Login)
 	apiV1.Use(middleware.JWTAuth())
 	apiV1.POST("/product/create", views.ProductCreate)
