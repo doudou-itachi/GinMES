@@ -11,7 +11,7 @@ import (
 func main() {
 	route := routes.InitRouter()
 	// 迁移到数据库
-	database.Db.AutoMigrate(&models.ProductInfo{}, &models.ProductUnitInfo{},
+	database.Db.AutoMigrate(&models.ProductUnitInfo{}, &models.ProductInfo{},
 		&models.LineInfo{}, &models.WorkProcessInfo{},
 		&models.WorkCraftInfo{}, &models.WorkStationInfo{}, &models.Users{})
 	// 产品

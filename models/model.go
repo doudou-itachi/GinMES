@@ -21,7 +21,7 @@ type ProductInfo struct {
 }
 
 func (P *ProductInfo) TableName() string {
-	return "productInfo"
+	return "productinfo"
 }
 
 type ProductUnitInfo struct {

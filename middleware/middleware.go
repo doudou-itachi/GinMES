@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"GinMES/database"
 	"GinMES/models"
 	"GinMES/utils"
 	"errors"
@@ -67,7 +68,10 @@ func CheckUserInfo(claims *models.CustomClaims) error {
 	username := claims.Username
 	password := claims.Password
 	//获取数据库用户名及密码
-	if username == "admin" && password == "123456" {
+	var user_object models.Users
+	database.Db.Model(&user_object).Where(&models.Users{Username: username, Password: password}).First(&user_object)
+
+	if user_object.Username == username && user_object.Password == password {
 		return nil
 	}
 	return errors.New("用户名或密码错误")
