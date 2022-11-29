@@ -489,7 +489,7 @@ func LineGet(c *gin.Context) {
 	if len(linegetbind.LineName) != 0 {
 		qs = qs.Where(&models.LineInfo{LineName: linegetbind.LineName})
 	}
-	res := qs.Find(&line_object)
+	res := qs.Preload("WorkStationInfo").Find(&line_object)
 	if res.Error != nil || res.RowsAffected == 0 {
 		utils_response.Response(-1, "", "查询失败")
 		return

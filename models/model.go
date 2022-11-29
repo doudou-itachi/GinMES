@@ -97,6 +97,7 @@ type Users struct {
 	Password string `json:"password"`
 }
 
+// CustomClaims 不迁移
 type CustomClaims struct {
 	Users
 	jwt.StandardClaims

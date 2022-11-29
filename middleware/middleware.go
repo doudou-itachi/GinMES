@@ -38,6 +38,14 @@ func JWTAuth() gin.HandlerFunc {
 
 		//解析token包含的信息
 		claims, err := utils.ParseToken(parts[1])
+		// 解析到的token如果过期，刷新新的 token设置到 Authorization
+		if strings.Contains(err.Error(), "expired") {
+			new_token, _ := utils.RefreshToken(parts[1])
+			ctx.Header("new_token", new_token)
+			ctx.Request.Header.Set("Authorization", parts[0]+new_token)
+			ctx.Next()
+			return
+		}
 		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{
 				"code": -1,
