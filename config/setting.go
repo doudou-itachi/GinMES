@@ -11,6 +11,7 @@ const (
 	Host           = "172.27.106.74:3306"
 	DataBaseName   = "testmes"
 	TokenValidTime = time.Hour * 1
+	HttpPort       = "5000"
 )
 
 var DSN string

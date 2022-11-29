@@ -31,7 +31,7 @@ func SliceStrToSliceInt(old_slice []string) ([]int, error) {
 	return new_slice, nil
 }
 
-// Sha256加密
+// Sha256 Sha256加密
 func Sha256(src string) string {
 	m := sha256.New()
 	m.Write([]byte(src))

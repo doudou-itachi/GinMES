@@ -1,7 +1,9 @@
 package main
 
 import (
+	"GinMES/config"
 	"GinMES/routes"
+	"fmt"
 	"net/http"
 )
 
@@ -49,7 +51,8 @@ func main() {
 	//apiV1.PUT("/station", views.StationPut)
 	//apiV1.DELETE("/station", views.StationDelete)
 	//route.Run("0.0.0.0:5000")
-	server := &http.Server{Addr: "0.0.0.0:5000", Handler: route}
+	server := &http.Server{Addr: "0.0.0.0:" + config.HttpPort, Handler: route}
 
-	server.ListenAndServe()
+	err := server.ListenAndServe()
+	fmt.Println(err)
 }
