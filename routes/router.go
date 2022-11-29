@@ -10,10 +10,16 @@ import (
 func InitRouter() *gin.Engine {
 	//
 	r := gin.Default()
+
 	// 添加路由规则
 	apiV1 := r.Group("/api")
+	// cors 中間件
 	apiV1.Use(cors.Default())
 	apiV1.POST("/login", views.Login)
+	//csrf中间件
+	r.Use(middleware.CSRF())
+	r.Use(middleware.CsrfToken())
+	//JWT中间件
 	apiV1.Use(middleware.JWTAuth())
 	apiV1.POST("/product/create", views.ProductCreate)
 	apiV1.GET("/product/list", views.GetProduct)
