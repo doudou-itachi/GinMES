@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -27,4 +29,12 @@ func SliceStrToSliceInt(old_slice []string) ([]int, error) {
 		new_slice = append(new_slice, v)
 	}
 	return new_slice, nil
+}
+
+// Sha256加密
+func Sha256(src string) string {
+	m := sha256.New()
+	m.Write([]byte(src))
+	res := hex.EncodeToString(m.Sum(nil))
+	return res
 }

@@ -430,9 +430,9 @@ func Login(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 	var user_object models.Users
-	res := database.Db.Where(&models.Users{Username: username, Password: password}).First(&user_object)
+	res := database.Db.Where(&models.Users{Username: username}).First(&user_object)
 	if res.RowsAffected != 0 {
-		if user_object.Username == username && user_object.Password == password {
+		if user_object.Username == username && user_object.Password == utils.Sha256(password) {
 			token, er := utils.GenToken(user_object)
 			if er != nil {
 				utils_response.Response(-1, "", "token签发错误")
