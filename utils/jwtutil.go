@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"GinMES/config"
 	"GinMES/models"
 	"errors"
 	"fmt"
@@ -15,8 +16,8 @@ func GenToken(user models.Users) (string, error) {
 	claim := models.CustomClaims{
 		user,
 		jwt.StandardClaims{
-			ExpiresAt: jwt.At(time.Now().Add(time.Hour * 24)), //一天后过期
-			Issuer:    "xx",                                   //签发人
+			ExpiresAt: jwt.At(time.Now().Add(config.TokenValidTime)), //一天后过期
+			Issuer:    "https://go-admin/",                           //签发人
 		},
 	}
 
