@@ -16,9 +16,9 @@ func InitRouter() *gin.Engine {
 	// cors 中間件
 	apiV1.Use(cors.Default())
 	apiV1.POST("/login", views.Login)
-	//csrf中间件
-	r.Use(middleware.CSRF())
-	r.Use(middleware.CsrfToken())
+	//csrf中间件 使用r.user()不起作用
+	apiV1.Use(middleware.CSRF())
+	apiV1.Use(middleware.CsrfToken())
 	//JWT中间件
 	apiV1.Use(middleware.JWTAuth())
 	apiV1.POST("/product/create", views.ProductCreate)

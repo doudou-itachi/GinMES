@@ -42,7 +42,7 @@ func JWTAuth() gin.HandlerFunc {
 		if strings.Contains(err.Error(), "expired") {
 			new_token, _ := utils.RefreshToken(parts[1])
 			ctx.Header("new_token", new_token)
-			ctx.Request.Header.Set("Authorization", parts[0]+new_token)
+			ctx.Request.Header.Set("Authorization", parts[0]+" "+new_token)
 			ctx.Next()
 			return
 		}
