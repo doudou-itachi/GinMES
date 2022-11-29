@@ -1,6 +1,9 @@
 package config
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 const (
 	User           = "root"
@@ -9,3 +12,10 @@ const (
 	DataBaseName   = "testmes"
 	TokenValidTime = time.Hour * 1
 )
+
+var DSN string
+
+func init() {
+	DSN = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		User, Password, Host, DataBaseName)
+}
