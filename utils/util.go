@@ -20,6 +20,9 @@ func (g *Gin) Response(code int, data interface{}, message string) {
 	return
 }
 func SliceStrToSliceInt(old_slice []string) ([]int, error) {
+	/*
+		type:[]string[1 2 3] --> type:[]int[1 2 3]
+	*/
 	new_slice := make([]int, len(old_slice))
 	for index, val := range old_slice {
 		v, err := strconv.Atoi(val)
