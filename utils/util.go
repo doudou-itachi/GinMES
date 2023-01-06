@@ -20,13 +20,14 @@ func (g *Gin) Response(code int, data interface{}, message string) {
 	return
 }
 func SliceStrToSliceInt(old_slice []string) ([]int, error) {
-	new_slice := make([]int, 0)
-	for _, val := range old_slice {
+	new_slice := make([]int, len(old_slice))
+	for index, val := range old_slice {
 		v, err := strconv.Atoi(val)
 		if err != nil {
-			return new_slice, err
+			panic(err)
 		}
-		new_slice = append(new_slice, v)
+		//new_slice = append(new_slice, v)
+		new_slice[index] = v
 	}
 	return new_slice, nil
 }
